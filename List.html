@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Link Hub</title>
+    <style>
+        /* --- General Styling & Theming --- */
+        :root {
+            --bg-color: #121212;
+            --surface-color: #1e1e1e;
+            --primary-color: #03dac6;
+            --primary-variant-color: #3700b3;
+            --secondary-color: #bb86fc;
+            --text-color: #e1e1e1;
+            --text-secondary-color: #a0a0a0;
+            --border-color: #2c2c2c;
+            --shadow-color: rgba(0, 0, 0, 0.4);
+            --danger-color: #cf6679;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+        }
+
+        /* --- Layout & Container --- */
+        .container {
+            max-width: 900px;
+            margin: 2rem auto;
+            padding: 1rem;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 2.5rem;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 1.5rem;
+        }
+
+        header h1 {
+            color: var(--secondary-color);
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        header p {
+            color: var(--text-secondary-color);
+            font-size: 1.1rem;
+        }
+
+        /* --- Form & Input Styling --- */
+        .form-container, .search-container {
+            background-color: var(--surface-color);
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 12px var(--shadow-color);
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: var(--text-secondary-color);
+        }
+
+        input[type="text"], input[type="url"] {
+            width: 100%;
+            padding: 0.8rem;
+            border: 1px solid var(--border-color);
+            border-radius: 5px;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-size: 1rem;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+
+        input[type="text"]:focus, input[type="url"]:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(3, 218, 198, 0.3);
+        }
+
+        button {
+            padding: 0.8rem 1.5rem;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: bold;
+            transition: background-color 0.3s, transform 0.2s;
+        }
+
+        button.primary {
+            background-color: var(--primary-color);
+            color: #000;
+        }
+
+        button.primary:hover {
+            background-color: #018786;
+            transform: translateY(-2px);
+        }
+
+        /* --- Link Card Styling --- */
+        #link-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .link-card {
+            background-color: var(--surface-color);
+            border-radius: 8px;
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            box-shadow: 0 4px 12px var(--shadow-color);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        
+        .link-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 16px var(--shadow-color);
+        }
+
+        .link-card h3 {
+            font-size: 1.25rem;
+            margin-bottom: 0.5rem;
+            word-break: break-all;
+        }
+
+        .link-card a {
+            color: var(--primary-color);
+            text-decoration: none;
+            word-break: break-all;
+            transition: color 0.3s;
+        }
+
+        .link-card a:hover {
+            color: var(--secondary-color);
+            text-decoration: underline;
+        }
+
+        .link-card .actions {
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            gap: 0.5rem;
+            justify-content: flex-end;
+        }
+
+        .actions button {
+            background: none;
+            border: 1px solid var(--border-color);
+            color: var(--text-secondary-color);
+            padding: 0.4rem 0.8rem;
+        }
+
+        .actions button.edit-btn:hover {
+            background-color: var(--primary-variant-color);
+            color: var(--text-color);
+        }
+
+        .actions button.delete-btn:hover {
+            background-color: var(--danger-color);
+            color: var(--text-color);
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            color: var(--text-secondary-color);
+            background: var(--surface-color);
+            border-radius: 8px;
+        }
+
+        /* --- Modal Styling --- */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s, visibility 0.3s;
+            z-index: 1000;
+        }
+
+        .modal-overlay.visible {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal-content {
+            background-color: var(--surface-color);
+            padding: 2rem;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 500px;
+            transform: scale(0.9);
+            transition: transform 0.3s;
+        }
+
+        .modal-overlay.visible .modal-content {
+            transform: scale(1);
+        }
+
+        .modal-content h2 {
+            margin-bottom: 1.5rem;
+            color: var(--secondary-color);
+        }
+
+        .modal-actions {
+            margin-top: 1.5rem;
+            display: flex;
+            justify-content: flex-end;
+            gap: 1rem;
+        }
+
+        .modal-actions button.secondary {
+            background-color: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--text-color);
+        }
+
+        .modal-actions button.secondary:hover {
+            background-color: var(--border-color);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <header>
+            <h1>My Link Hub</h1>
+            <p>Your personal, private, and persistent link saving dashboard.</p>
+        </header>
+
+        <main>
+            <div class="form-container">
+                <form id="add-link-form">
+                    <div class="form-group">
+                        <label for="link-title">Link Title</label>
+                        <input type="text" id="link-title" placeholder="e.g., Awesome Design Tools" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="link-url">Link URL</label>
+                        <input type="url" id="link-url" placeholder="https://www.example.com" required>
+                    </div>
+                    <button type="submit" class="primary">Add Link</button>
+                </form>
+            </div>
+
+            <div class="search-container">
+                 <div class="form-group">
+                    <label for="search-input">Filter Links</label>
+                    <input type="text" id="search-input" placeholder="Search by title or URL...">
+                </div>
+            </div>
+
+            <div id="link-container">
+                <!-- Links will be dynamically inserted here -->
+            </div>
+        </main>
+    </div>
+
+    <!-- Edit Modal -->
+    <div id="edit-modal" class="modal-overlay">
+        <div class="modal-content">
+            <h2>Edit Link</h2>
+            <form id="edit-link-form">
+                <input type="hidden" id="edit-link-id">
+                <div class="form-group">
+                    <label for="edit-link-title">Link Title</label>
+                    <input type="text" id="edit-link-title" required>
+                </div>
+                <div class="form-group">
+                    <label for="edit-link-url">Link URL</label>
+                    <input type="url" id="edit-link-url" required>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" id="cancel-edit-btn" class="secondary">Cancel</button>
+                    <button type="submit" class="primary">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // --- DOM Element References ---
+            const addLinkForm = document.getElementById('add-link-form');
+            const linkTitleInput = document.getElementById('link-title');
+            const linkUrlInput = document.getElementById('link-url');
+            const linkContainer = document.getElementById('link-container');
+            const searchInput = document.getElementById('search-input');
+
+            const editModal = document.getElementById('edit-modal');
+            const editLinkForm = document.getElementById('edit-link-form');
+            const editLinkId = document.getElementById('edit-link-id');
+            const editLinkTitle = document.getElementById('edit-link-title');
+            const editLinkUrl = document.getElementById('edit-link-url');
+            const cancelEditBtn = document.getElementById('cancel-edit-btn');
+            
+            // --- Data Management (using localStorage) ---
+            const getLinks = () => {
+                const links = localStorage.getItem('myLinkHubLinks');
+                return links ? JSON.parse(links) : [];
+            };
+
+            const saveLinks = (links) => {
+                localStorage.setItem('myLinkHubLinks', JSON.stringify(links));
+            };
+
+            // --- Core Rendering Function ---
+            const renderLinks = (filter = '') => {
+                linkContainer.innerHTML = '';
+                const links = getLinks();
+                
+                const filteredLinks = links.filter(link => 
+                    link.title.toLowerCase().includes(filter.toLowerCase()) || 
+                    link.url.toLowerCase().includes(filter.toLowerCase())
+                );
+                
+                if (filteredLinks.length === 0) {
+                    linkContainer.innerHTML = `<div class="empty-state"><h3>No links found.</h3><p>Add a new link above to get started!</p></div>`;
+                    return;
+                }
+
+                filteredLinks.forEach(link => {
+                    const linkCard = document.createElement('div');
+                    linkCard.className = 'link-card';
+                    linkCard.dataset.id = link.id;
+
+                    linkCard.innerHTML = `
+                        <div>
+                            <h3>${escapeHTML(link.title)}</h3>
+                            <a href="${escapeHTML(link.url)}" target="_blank" rel="noopener noreferrer">${escapeHTML(link.url)}</a>
+                        </div>
+                        <div class="actions">
+                            <button class="edit-btn">Edit</button>
+                            <button class="delete-btn">Delete</button>
+                        </div>
+                    `;
+                    linkContainer.appendChild(linkCard);
+                });
+            };
+            
+            // --- Utility to prevent XSS ---
+            const escapeHTML = (str) => {
+                const p = document.createElement('p');
+                p.textContent = str;
+                return p.innerHTML;
+            };
+
+            // --- Event Handlers ---
+            addLinkForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const title = linkTitleInput.value.trim();
+                const url = linkUrlInput.value.trim();
+
+                if (title && url) {
+                    const newLink = {
+                        id: Date.now().toString(),
+                        title,
+                        url,
+                    };
+                    const links = getLinks();
+                    links.unshift(newLink); // Add to the beginning of the array
+                    saveLinks(links);
+                    renderLinks(searchInput.value);
+                    addLinkForm.reset();
+                }
+            });
+
+            linkContainer.addEventListener('click', (e) => {
+                const linkCard = e.target.closest('.link-card');
+                if (!linkCard) return;
+                
+                const linkId = linkCard.dataset.id;
+
+                // Handle Delete
+                if (e.target.classList.contains('delete-btn')) {
+                    if (confirm('Are you sure you want to delete this link?')) {
+                        let links = getLinks();
+                        links = links.filter(link => link.id !== linkId);
+                        saveLinks(links);
+                        renderLinks(searchInput.value);
+                    }
+                }
+
+                // Handle Edit
+                if (e.target.classList.contains('edit-btn')) {
+                    const links = getLinks();
+                    const linkToEdit = links.find(link => link.id === linkId);
+                    if (linkToEdit) {
+                        editLinkId.value = linkToEdit.id;
+                        editLinkTitle.value = linkToEdit.title;
+                        editLinkUrl.value = linkToEdit.url;
+                        editModal.classList.add('visible');
+                    }
+                }
+            });
+
+            editLinkForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const id = editLinkId.value;
+                const newTitle = editLinkTitle.value.trim();
+                const newUrl = editLinkUrl.value.trim();
+
+                if (id && newTitle && newUrl) {
+                    let links = getLinks();
+                    const linkIndex = links.findIndex(link => link.id === id);
+                    if (linkIndex > -1) {
+                        links[linkIndex] = { id, title: newTitle, url: newUrl };
+                        saveLinks(links);
+                        renderLinks(searchInput.value);
+                        closeEditModal();
+                    }
+                }
+            });
+
+            searchInput.addEventListener('input', () => {
+                renderLinks(searchInput.value);
+            });
+            
+            const closeEditModal = () => {
+                editModal.classList.remove('visible');
+            };
+
+            cancelEditBtn.addEventListener('click', closeEditModal);
+            editModal.addEventListener('click', (e) => {
+                if (e.target === editModal) {
+                    closeEditModal();
+                }
+            });
+
+            // --- Initial Load ---
+            renderLinks();
+        });
+    </script>
+
+</body>
+</html>
