@@ -3,20 +3,41 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Link Hub</title>
+    <title>My Advanced Link Hub</title>
     <style>
         /* --- General Styling & Theming --- */
         :root {
             --bg-color: #121212;
             --surface-color: #1e1e1e;
             --primary-color: #03dac6;
-            --primary-variant-color: #3700b3;
+            --primary-variant-color: #018786;
             --secondary-color: #bb86fc;
             --text-color: #e1e1e1;
             --text-secondary-color: #a0a0a0;
             --border-color: #2c2c2c;
             --shadow-color: rgba(0, 0, 0, 0.4);
             --danger-color: #cf6679;
+            --success-color: #4caf50;
+            --warning-color: #ff9800;
+            --info-color: #2196f3;
+            --favorite-color: #ffd700;
+        }
+
+        body.light {
+            --bg-color: #ffffff;
+            --surface-color: #f5f5f5;
+            --primary-color: #03dac6;
+            --primary-variant-color: #018786;
+            --secondary-color: #6200ee;
+            --text-color: #212121;
+            --text-secondary-color: #757575;
+            --border-color: #e0e0e0;
+            --shadow-color: rgba(0, 0, 0, 0.1);
+            --danger-color: #b00020;
+            --success-color: #388e3c;
+            --warning-color: #f57c00;
+            --info-color: #1976d2;
+            --favorite-color: #ffcc00;
         }
 
         * {
@@ -30,17 +51,20 @@
             background-color: var(--bg-color);
             color: var(--text-color);
             line-height: 1.6;
+            transition: background-color 0.3s, color 0.3s;
         }
 
         /* --- Layout & Container --- */
         .container {
-            max-width: 900px;
+            max-width: 1200px;
             margin: 2rem auto;
             padding: 1rem;
         }
 
         header {
-            text-align: center;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
             margin-bottom: 2.5rem;
             border-bottom: 1px solid var(--border-color);
             padding-bottom: 1.5rem;
@@ -57,13 +81,28 @@
             font-size: 1.1rem;
         }
 
+        #theme-toggle {
+            background: none;
+            border: 1px solid var(--border-color);
+            color: var(--text-color);
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        #theme-toggle:hover {
+            background-color: var(--surface-color);
+        }
+
         /* --- Form & Input Styling --- */
-        .form-container, .search-container {
+        .form-container, .search-container, .controls {
             background-color: var(--surface-color);
             padding: 1.5rem;
             border-radius: 8px;
-            margin-bottom: 2rem;
+            margin-bottom: 1rem;
             box-shadow: 0 4px 12px var(--shadow-color);
+            transition: background-color 0.3s, box-shadow 0.3s;
         }
 
         .form-group {
@@ -77,7 +116,7 @@
             color: var(--text-secondary-color);
         }
 
-        input[type="text"], input[type="url"] {
+        input[type="text"], input[type="url"], select, input[type="file"] {
             width: 100%;
             padding: 0.8rem;
             border: 1px solid var(--border-color);
@@ -88,7 +127,7 @@
             transition: border-color 0.3s, box-shadow 0.3s;
         }
 
-        input[type="text"]:focus, input[type="url"]:focus {
+        input[type="text"]:focus, input[type="url"]:focus, select:focus {
             outline: none;
             border-color: var(--primary-color);
             box-shadow: 0 0 0 3px rgba(3, 218, 198, 0.3);
@@ -110,14 +149,33 @@
         }
 
         button.primary:hover {
-            background-color: #018786;
+            background-color: var(--primary-variant-color);
             transform: translateY(-2px);
+        }
+
+        button.secondary {
+            background-color: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--text-color);
+        }
+
+        button.secondary:hover {
+            background-color: var(--border-color);
+        }
+
+        button.danger {
+            background-color: var(--danger-color);
+            color: #fff;
+        }
+
+        button.danger:hover {
+            background-color: #b00020;
         }
 
         /* --- Link Card Styling --- */
         #link-container {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
             gap: 1.5rem;
         }
 
@@ -130,11 +188,21 @@
             justify-content: space-between;
             box-shadow: 0 4px 12px var(--shadow-color);
             transition: transform 0.3s, box-shadow 0.3s;
+            position: relative;
         }
-        
+
         .link-card:hover {
             transform: translateY(-5px);
             box-shadow: 0 8px 16px var(--shadow-color);
+        }
+
+        .link-card.favorite::before {
+            content: '★';
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            color: var(--favorite-color);
+            font-size: 1.5rem;
         }
 
         .link-card h3 {
@@ -155,10 +223,29 @@
             text-decoration: underline;
         }
 
+        .link-card .date {
+            font-size: 0.85rem;
+            color: var(--text-secondary-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .link-card .tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .tag {
+            background-color: var(--border-color);
+            padding: 0.3rem 0.6rem;
+            border-radius: 15px;
+            font-size: 0.85rem;
+            color: var(--text-color);
+        }
+
         .link-card .actions {
-            margin-top: 1rem;
-            padding-top: 1rem;
-            border-top: 1px solid var(--border-color);
+            margin-top: auto;
             display: flex;
             gap: 0.5rem;
             justify-content: flex-end;
@@ -166,27 +253,37 @@
 
         .actions button {
             background: none;
-            border: 1px solid var(--border-color);
+            border: none;
             color: var(--text-secondary-color);
-            padding: 0.4rem 0.8rem;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: color 0.3s;
+            padding: 0.4rem;
         }
 
-        .actions button.edit-btn:hover {
-            background-color: var(--primary-variant-color);
+        .actions button:hover {
             color: var(--text-color);
         }
 
-        .actions button.delete-btn:hover {
-            background-color: var(--danger-color);
-            color: var(--text-color);
+        .actions .edit-btn:hover {
+            color: var(--info-color);
         }
-        
+
+        .actions .delete-btn:hover {
+            color: var(--danger-color);
+        }
+
+        .actions .fav-btn.favorited {
+            color: var(--favorite-color);
+        }
+
         .empty-state {
             text-align: center;
             padding: 3rem;
             color: var(--text-secondary-color);
             background: var(--surface-color);
             border-radius: 8px;
+            grid-column: 1 / -1;
         }
 
         /* --- Modal Styling --- */
@@ -216,9 +313,9 @@
             padding: 2rem;
             border-radius: 8px;
             width: 90%;
-            max-width: 500px;
+            max-width: 600px;
             transform: scale(0.9);
-            transition: transform 0.3s;
+            transition: transform 0.3s, background-color 0.3s;
         }
 
         .modal-overlay.visible .modal-content {
@@ -237,14 +334,54 @@
             gap: 1rem;
         }
 
-        .modal-actions button.secondary {
-            background-color: transparent;
-            border: 1px solid var(--border-color);
+        /* --- Toast Notification --- */
+        #toast {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: var(--surface-color);
             color: var(--text-color);
+            padding: 1rem 2rem;
+            border-radius: 5px;
+            box-shadow: 0 4px 12px var(--shadow-color);
+            opacity: 0;
+            transition: opacity 0.3s;
+            z-index: 1001;
         }
 
-        .modal-actions button.secondary:hover {
-            background-color: var(--border-color);
+        #toast.visible {
+            opacity: 1;
+        }
+
+        /* --- Animations --- */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .link-card {
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        /* --- Responsive Design --- */
+        @media (max-width: 600px) {
+            .container {
+                padding: 0.5rem;
+            }
+
+            header {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            header h1 {
+                font-size: 2rem;
+            }
+
+            #link-container {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
@@ -252,8 +389,11 @@
 
     <div class="container">
         <header>
-            <h1>My Link Hub</h1>
-            <p>Your personal, private, and persistent link saving dashboard.</p>
+            <div>
+                <h1>My Advanced Link Hub</h1>
+                <p>Your professional, feature-rich link management dashboard. Powered by localStorage.</p>
+            </div>
+            <button id="theme-toggle">🌙 Toggle Theme</button>
         </header>
 
         <main>
@@ -267,15 +407,47 @@
                         <label for="link-url">Link URL</label>
                         <input type="url" id="link-url" placeholder="https://www.example.com" required>
                     </div>
-                    <button type="submit" class="primary">Add Link</button>
+                    <div class="form-group">
+                        <label for="link-tags">Tags (comma-separated)</label>
+                        <input type="text" id="link-tags" placeholder="e.g., design, tools, ui">
+                    </div>
+                    <button type="submit" class="primary">+ Add Link</button>
                 </form>
             </div>
 
             <div class="search-container">
-                 <div class="form-group">
-                    <label for="search-input">Filter Links</label>
-                    <input type="text" id="search-input" placeholder="Search by title or URL...">
+                <div class="form-group">
+                    <label for="search-input">🔍 Search Links (title, URL, tags)</label>
+                    <input type="text" id="search-input" placeholder="Search by title, URL, or tags...">
                 </div>
+                <div class="form-group">
+                    <label for="filter-tags">Filter by Tags (multi-select)</label>
+                    <select id="filter-tags" multiple>
+                        <!-- Options dynamically populated -->
+                    </select>
+                </div>
+            </div>
+
+            <div class="controls">
+                <div class="form-group" style="display: inline-block; width: 48%; margin-right: 4%;">
+                    <label for="sort-by">Sort By</label>
+                    <select id="sort-by">
+                        <option value="date">Date Added</option>
+                        <option value="title">Title</option>
+                        <option value="url">URL</option>
+                    </select>
+                </div>
+                <div class="form-group" style="display: inline-block; width: 48%;">
+                    <label for="order">Order</label>
+                    <select id="order">
+                        <option value="desc">Descending</option>
+                        <option value="asc">Ascending</option>
+                    </select>
+                </div>
+                <button id="export-btn" class="secondary">📤 Export Links</button>
+                <button id="import-btn" class="secondary">📥 Import Links</button>
+                <button id="clear-all" class="danger">🗑 Clear All</button>
+                <input type="file" id="import-file" accept=".json" style="display: none;">
             </div>
 
             <div id="link-container">
@@ -287,7 +459,7 @@
     <!-- Edit Modal -->
     <div id="edit-modal" class="modal-overlay">
         <div class="modal-content">
-            <h2>Edit Link</h2>
+            <h2>✎ Edit Link</h2>
             <form id="edit-link-form">
                 <input type="hidden" id="edit-link-id">
                 <div class="form-group">
@@ -298,6 +470,10 @@
                     <label for="edit-link-url">Link URL</label>
                     <input type="url" id="edit-link-url" required>
                 </div>
+                <div class="form-group">
+                    <label for="edit-link-tags">Tags (comma-separated)</label>
+                    <input type="text" id="edit-link-tags">
+                </div>
                 <div class="modal-actions">
                     <button type="button" id="cancel-edit-btn" class="secondary">Cancel</button>
                     <button type="submit" class="primary">Save Changes</button>
@@ -306,6 +482,8 @@
         </div>
     </div>
 
+    <!-- Toast Notification -->
+    <div id="toast"></div>
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
@@ -313,65 +491,155 @@
             const addLinkForm = document.getElementById('add-link-form');
             const linkTitleInput = document.getElementById('link-title');
             const linkUrlInput = document.getElementById('link-url');
+            const linkTagsInput = document.getElementById('link-tags');
             const linkContainer = document.getElementById('link-container');
             const searchInput = document.getElementById('search-input');
+            const filterTagsSelect = document.getElementById('filter-tags');
+            const sortBySelect = document.getElementById('sort-by');
+            const orderSelect = document.getElementById('order');
+            const exportBtn = document.getElementById('export-btn');
+            const importBtn = document.getElementById('import-btn');
+            const importFile = document.getElementById('import-file');
+            const clearAllBtn = document.getElementById('clear-all');
+            const themeToggle = document.getElementById('theme-toggle');
+            const toast = document.getElementById('toast');
 
             const editModal = document.getElementById('edit-modal');
             const editLinkForm = document.getElementById('edit-link-form');
             const editLinkId = document.getElementById('edit-link-id');
             const editLinkTitle = document.getElementById('edit-link-title');
             const editLinkUrl = document.getElementById('edit-link-url');
+            const editLinkTags = document.getElementById('edit-link-tags');
             const cancelEditBtn = document.getElementById('cancel-edit-btn');
-            
+
             // --- Data Management (using localStorage) ---
+            const STORAGE_KEY = 'myAdvancedLinkHubLinks';
+            const THEME_KEY = 'myAdvancedLinkHubTheme';
+
             const getLinks = () => {
-                const links = localStorage.getItem('myLinkHubLinks');
+                const links = localStorage.getItem(STORAGE_KEY);
                 return links ? JSON.parse(links) : [];
             };
 
             const saveLinks = (links) => {
-                localStorage.setItem('myLinkHubLinks', JSON.stringify(links));
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(links));
+            };
+
+            // --- Theme Management ---
+            const loadTheme = () => {
+                const theme = localStorage.getItem(THEME_KEY) || 'dark';
+                document.body.classList.toggle('light', theme === 'light');
+                themeToggle.textContent = theme === 'light' ? '🌙 Dark Mode' : '☀️ Light Mode';
+            };
+
+            const toggleTheme = () => {
+                document.body.classList.toggle('light');
+                const isLight = document.body.classList.contains('light');
+                localStorage.setItem(THEME_KEY, isLight ? 'light' : 'dark');
+                themeToggle.textContent = isLight ? '🌙 Dark Mode' : '☀️ Light Mode';
+            };
+
+            themeToggle.addEventListener('click', toggleTheme);
+            loadTheme();
+
+            // --- Utility Functions ---
+            const escapeHTML = (str) => {
+                const p = document.createElement('p');
+                p.textContent = str;
+                return p.innerHTML;
+            };
+
+            const parseTags = (tagsStr) => {
+                return tagsStr.split(',').map(t => t.trim()).filter(t => t);
+            };
+
+            const getAllUniqueTags = () => {
+                const links = getLinks();
+                const allTags = links.flatMap(link => link.tags);
+                return [...new Set(allTags)].sort();
+            };
+
+            const populateTagOptions = () => {
+                filterTagsSelect.innerHTML = '';
+                const tags = getAllUniqueTags();
+                tags.forEach(tag => {
+                    const option = document.createElement('option');
+                    option.value = tag;
+                    option.textContent = tag;
+                    filterTagsSelect.appendChild(option);
+                });
+            };
+
+            const showToast = (message, duration = 3000) => {
+                toast.textContent = message;
+                toast.classList.add('visible');
+                setTimeout(() => {
+                    toast.classList.remove('visible');
+                }, duration);
+            };
+
+            // --- Sorting Function ---
+            const sortLinks = (links, sortBy, order) => {
+                const sorted = [...links];
+                const multiplier = order === 'asc' ? 1 : -1;
+                sorted.sort((a, b) => {
+                    if (sortBy === 'date') {
+                        return multiplier * (new Date(a.date) - new Date(b.date));
+                    } else if (sortBy === 'title') {
+                        return multiplier * a.title.localeCompare(b.title);
+                    } else if (sortBy === 'url') {
+                        return multiplier * a.url.localeCompare(b.url);
+                    }
+                    return 0;
+                });
+                return sorted;
             };
 
             // --- Core Rendering Function ---
-            const renderLinks = (filter = '') => {
+            const renderLinks = () => {
                 linkContainer.innerHTML = '';
                 const links = getLinks();
-                
-                const filteredLinks = links.filter(link => 
-                    link.title.toLowerCase().includes(filter.toLowerCase()) || 
-                    link.url.toLowerCase().includes(filter.toLowerCase())
-                );
-                
+                const searchTerm = searchInput.value.toLowerCase();
+                const selectedTags = Array.from(filterTagsSelect.selectedOptions).map(opt => opt.value);
+                const sortBy = sortBySelect.value;
+                const order = orderSelect.value;
+
+                let filteredLinks = links.filter(link => {
+                    const matchesSearch = link.title.toLowerCase().includes(searchTerm) ||
+                                          link.url.toLowerCase().includes(searchTerm) ||
+                                          link.tags.some(tag => tag.toLowerCase().includes(searchTerm));
+                    const matchesTags = selectedTags.length === 0 || link.tags.some(tag => selectedTags.includes(tag));
+                    return matchesSearch && matchesTags;
+                });
+
+                filteredLinks = sortLinks(filteredLinks, sortBy, order);
+
                 if (filteredLinks.length === 0) {
-                    linkContainer.innerHTML = `<div class="empty-state"><h3>No links found.</h3><p>Add a new link above to get started!</p></div>`;
+                    linkContainer.innerHTML = `<div class="empty-state"><h3>No links found.</h3><p>Add a new link or adjust your filters!</p></div>`;
                     return;
                 }
 
                 filteredLinks.forEach(link => {
                     const linkCard = document.createElement('div');
                     linkCard.className = 'link-card';
+                    if (link.favorite) linkCard.classList.add('favorite');
                     linkCard.dataset.id = link.id;
 
                     linkCard.innerHTML = `
                         <div>
                             <h3>${escapeHTML(link.title)}</h3>
                             <a href="${escapeHTML(link.url)}" target="_blank" rel="noopener noreferrer">${escapeHTML(link.url)}</a>
+                            <div class="tags">${link.tags.map(tag => `<span class="tag">${escapeHTML(tag)}</span>`).join('')}</div>
+                            <p class="date">Added: ${new Date(link.date).toLocaleDateString()}</p>
                         </div>
                         <div class="actions">
-                            <button class="edit-btn">Edit</button>
-                            <button class="delete-btn">Delete</button>
+                            <button class="fav-btn" title="Toggle Favorite">${link.favorite ? '★' : '☆'}</button>
+                            <button class="edit-btn" title="Edit">✎</button>
+                            <button class="delete-btn" title="Delete">🗑</button>
                         </div>
                     `;
                     linkContainer.appendChild(linkCard);
                 });
-            };
-            
-            // --- Utility to prevent XSS ---
-            const escapeHTML = (str) => {
-                const p = document.createElement('p');
-                p.textContent = str;
-                return p.innerHTML;
             };
 
             // --- Event Handlers ---
@@ -379,18 +647,24 @@
                 e.preventDefault();
                 const title = linkTitleInput.value.trim();
                 const url = linkUrlInput.value.trim();
+                const tagsStr = linkTagsInput.value.trim();
 
                 if (title && url) {
                     const newLink = {
                         id: Date.now().toString(),
                         title,
                         url,
+                        tags: parseTags(tagsStr),
+                        date: new Date().toISOString(),
+                        favorite: false
                     };
                     const links = getLinks();
-                    links.unshift(newLink); // Add to the beginning of the array
+                    links.unshift(newLink);
                     saveLinks(links);
-                    renderLinks(searchInput.value);
+                    populateTagOptions();
+                    renderLinks();
                     addLinkForm.reset();
+                    showToast('Link added successfully!');
                 }
             });
 
@@ -399,27 +673,38 @@
                 if (!linkCard) return;
                 
                 const linkId = linkCard.dataset.id;
+                let links = getLinks();
+                const linkIndex = links.findIndex(link => link.id === linkId);
+
+                if (linkIndex === -1) return;
+
+                // Handle Favorite
+                if (e.target.classList.contains('fav-btn')) {
+                    links[linkIndex].favorite = !links[linkIndex].favorite;
+                    saveLinks(links);
+                    renderLinks();
+                    showToast(links[linkIndex].favorite ? 'Added to favorites!' : 'Removed from favorites');
+                }
 
                 // Handle Delete
                 if (e.target.classList.contains('delete-btn')) {
                     if (confirm('Are you sure you want to delete this link?')) {
-                        let links = getLinks();
-                        links = links.filter(link => link.id !== linkId);
+                        links.splice(linkIndex, 1);
                         saveLinks(links);
-                        renderLinks(searchInput.value);
+                        populateTagOptions();
+                        renderLinks();
+                        showToast('Link deleted.');
                     }
                 }
 
                 // Handle Edit
                 if (e.target.classList.contains('edit-btn')) {
-                    const links = getLinks();
-                    const linkToEdit = links.find(link => link.id === linkId);
-                    if (linkToEdit) {
-                        editLinkId.value = linkToEdit.id;
-                        editLinkTitle.value = linkToEdit.title;
-                        editLinkUrl.value = linkToEdit.url;
-                        editModal.classList.add('visible');
-                    }
+                    const linkToEdit = links[linkIndex];
+                    editLinkId.value = linkToEdit.id;
+                    editLinkTitle.value = linkToEdit.title;
+                    editLinkUrl.value = linkToEdit.url;
+                    editLinkTags.value = linkToEdit.tags.join(', ');
+                    editModal.classList.add('visible');
                 }
             });
 
@@ -428,23 +713,27 @@
                 const id = editLinkId.value;
                 const newTitle = editLinkTitle.value.trim();
                 const newUrl = editLinkUrl.value.trim();
+                const newTagsStr = editLinkTags.value.trim();
 
                 if (id && newTitle && newUrl) {
                     let links = getLinks();
                     const linkIndex = links.findIndex(link => link.id === id);
                     if (linkIndex > -1) {
-                        links[linkIndex] = { id, title: newTitle, url: newUrl };
+                        links[linkIndex] = { 
+                            ...links[linkIndex],
+                            title: newTitle, 
+                            url: newUrl,
+                            tags: parseTags(newTagsStr)
+                        };
                         saveLinks(links);
-                        renderLinks(searchInput.value);
+                        populateTagOptions();
+                        renderLinks();
                         closeEditModal();
+                        showToast('Link updated successfully!');
                     }
                 }
             });
 
-            searchInput.addEventListener('input', () => {
-                renderLinks(searchInput.value);
-            });
-            
             const closeEditModal = () => {
                 editModal.classList.remove('visible');
             };
@@ -456,7 +745,74 @@
                 }
             });
 
+            // Search and Filter Listeners
+            searchInput.addEventListener('input', renderLinks);
+            filterTagsSelect.addEventListener('change', renderLinks);
+            sortBySelect.addEventListener('change', renderLinks);
+            orderSelect.addEventListener('change', renderLinks);
+
+            // Export
+            exportBtn.addEventListener('click', () => {
+                const links = getLinks();
+                const blob = new Blob([JSON.stringify(links, null, 2)], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'links.json';
+                a.click();
+                URL.revokeObjectURL(url);
+                showToast('Links exported!');
+            });
+
+            // Import
+            importBtn.addEventListener('click', () => importFile.click());
+            importFile.addEventListener('change', (e) => {
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = (ev) => {
+                        try {
+                            const imported = JSON.parse(ev.target.result);
+                            if (confirm('Replace existing links with imported ones?')) {
+                                saveLinks(imported);
+                                populateTagOptions();
+                                renderLinks();
+                                showToast('Links imported successfully!');
+                            }
+                        } catch (err) {
+                            showToast('Invalid JSON file.', 5000);
+                        }
+                    };
+                    reader.readAsText(file);
+                }
+                importFile.value = ''; // Reset for next use
+            });
+
+            // Clear All
+            clearAllBtn.addEventListener('click', () => {
+                if (confirm('Are you sure you want to clear all links? This cannot be undone.')) {
+                    saveLinks([]);
+                    populateTagOptions();
+                    renderLinks();
+                    showToast('All links cleared.');
+                }
+            });
+
+            // --- Keyboard Shortcuts ---
+            document.addEventListener('keydown', (e) => {
+                if (e.ctrlKey || e.metaKey) {
+                    if (e.key === 's') {
+                        e.preventDefault();
+                        searchInput.focus();
+                    } else if (e.key === 'a') {
+                        e.preventDefault();
+                        linkTitleInput.focus();
+                    }
+                }
+            });
+
             // --- Initial Load ---
+            populateTagOptions();
             renderLinks();
         });
     </script>
